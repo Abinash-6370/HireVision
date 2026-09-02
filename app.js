@@ -278,3 +278,110 @@ function addToHistory(payload, data, confidencePct) {
   `;
   tbody.prepend(row);
 }
+// ---------------------------------------------------------------------
+// Landing page enhancements: scroll reveal, animated counters, FAQ
+// ---------------------------------------------------------------------
+(function () {
+  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // ---- Scroll reveal ----
+  function initScrollReveal() {
+    const items = document.querySelectorAll(".reveal");
+    if (!items.length) return;
+
+    if (prefersReducedMotion || !("IntersectionObserver" in window)) {
+      items.forEach((el) => el.classList.add("reveal-visible"));
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("reveal-visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.15, rootMargin: "0px 0px -40px 0px" }
+    );
+
+    items.forEach((el) => observer.observe(el));
+  }
+
+  // ---- Animated counters (Placement Insights) ----
+  function animateCounter(el) {
+    const target = Number(el.dataset.target || "0");
+    const suffix = el.dataset.suffix || "";
+    const duration = 1400;
+    const start = performance.now();
+
+    function tick(now) {
+      const progress = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+      const value = Math.round(target * eased);
+      el.textContent = `${value.toLocaleString()}${suffix}`;
+      if (progress < 1) requestAnimationFrame(tick);
+    }
+
+    if (prefersReducedMotion) {
+      el.textContent = `${target.toLocaleString()}${suffix}`;
+      return;
+    }
+    requestAnimationFrame(tick);
+  }
+
+  function initCounters() {
+    const counters = document.querySelectorAll(".counter");
+    if (!counters.length) return;
+
+    if (!("IntersectionObserver" in window)) {
+      counters.forEach(animateCounter);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            animateCounter(entry.target);
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.4 }
+    );
+
+    counters.forEach((el) => observer.observe(el));
+  }
+
+  // ---- FAQ accordion ----
+  function initFaqAccordion() {
+    const list = document.getElementById("faq-list");
+    if (!list) return;
+
+    list.addEventListener("click", (e) => {
+      const btn = e.target.closest(".faq-q");
+      if (!btn) return;
+      const item = btn.closest(".faq-item");
+      const isOpen = item.classList.contains("open");
+
+      // close any other open item for a clean single-open accordion
+      list.querySelectorAll(".faq-item.open").forEach((openItem) => {
+        if (openItem !== item) {
+          openItem.classList.remove("open");
+          openItem.querySelector(".faq-q").setAttribute("aria-expanded", "false");
+        }
+      });
+
+      item.classList.toggle("open", !isOpen);
+      btn.setAttribute("aria-expanded", String(!isOpen));
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    initScrollReveal();
+    initCounters();
+    initFaqAccordion();
+  });
+})();

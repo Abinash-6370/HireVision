@@ -1,5 +1,3 @@
-
-
 from pathlib import Path
 from typing import Literal
 
@@ -120,6 +118,15 @@ app.add_middleware(
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
+
+@app.get("/predict")
+def predict_info():
+    return {
+        "message": "Send a POST request with student features to receive a prediction.",
+        "method": "POST",
+        "endpoint": "/predict",
+    }
 
 
 @app.post("/predict", response_model=PredictionResponse)
