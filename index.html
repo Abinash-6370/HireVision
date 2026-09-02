@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HireVision AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;0,700;1,500&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>.form-error{color:#a11;font-size:13px;margin-top:8px;}</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="brand-seal">HV</div>
+      <div class="brand-text">
+        <span class="eyebrow">See Your Placement Potential</span>
+        <h1>Hirevision AI</h1>
+      </div>
+    </div>
+    <nav class="tabs" id="navTabs">
+      <button data-view="home" class="active">Home</button>
+      <button data-view="auth">Login / Register</button>
+      <button data-view="dashboard">Dashboard</button>
+      <button data-view="predict">Predict</button>
+      <button data-view="history">History</button>
+      <button data-view="admin-login">Admin</button>
+      <button id="logout-btn" style="display:none;" onclick="logoutUser()">Logout</button>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- ============ HOME ============ -->
+  <section class="view active" id="view-home">
+    <div class="hero">
+      <div>
+        <div class="eyebrow-tag">Placement season, decoded</div>
+        <h2>Know your odds<br>before the <em>interview panel</em> does.</h2>
+        <p class="lede">Enter your academics, skills and internship record. The model reads your file the way a placement officer would — and tells you exactly which line to fix before recruiters see it.</p>
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="showView('predict')">Get my prediction →</button>
+          <button class="btn btn-ghost" onclick="showView('auth')">Login / Register</button>
+        </div>
+      </div>
+      <div class="ticket-mock">
+        <div class="ticket-row"><span>Candidate</span><span>Jyotiranjan</span></div>
+        <div class="ticket-row"><span>Branch</span><span>CSE-AIML, Final Yr</span></div>
+        <div class="ticket-row"><span>CGPA</span><span>9.02</span></div>
+        <div class="ticket-row"><span>Backlogs</span><span>0</span></div>
+        <div class="ticket-gauge">
+          <div class="num placed">Placed</div>
+          <div class="lbl">Predicted Outcome · 82% Confidence</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="features">
+      <div class="feature">
+        <div class="idx">Sec. A</div>
+        <h3>One form, one verdict</h3>
+        <p>Sixteen inputs — CGPA to hackathon count — compressed into a single probability, in under two seconds.</p>
+      </div>
+      <div class="feature">
+        <div class="idx">Sec. B</div>
+        <h3>Remarks, not just a score</h3>
+        <p>Every result ships with the two or three moves — an internship, a DSA sprint, a mock interview — most likely to move the needle.</p>
+      </div>
+      <div class="feature">
+        <div class="idx">Sec. C</div>
+        <h3>A record the cell can use</h3>
+        <p>Placement coordinators see branch-wise readiness at a glance, instead of chasing spreadsheets before recruiter visits.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ AUTH ============ -->
+  <section class="view" id="view-auth">
+    <h2 class="section-title">Registration Desk</h2>
+    <p class="section-sub">Students register once; the record follows you through every prediction and every placement drive.</p>
+    <div class="auth-shell">
+      <div class="auth-toggle">
+        <button class="active" data-auth="login" onclick="setAuth('login')">Login</button>
+        <button data-auth="register" onclick="setAuth('register')">Register</button>
+      </div>
+      <div class="card">
+        <div id="login-form">
+          <label>Email</label>
+          <input type="email" id="login-email" placeholder="you@giet.edu">
+          <label>Password</label>
+          <input type="password" id="login-password" placeholder="••••••••">
+          <div id="login-error" class="form-error" style="display:none;"></div>
+          <button class="btn btn-primary submit-full" onclick="loginUser()">Enter dashboard →</button>
+          <p class="form-note">Forgot password? <a href="#">Reset it here.</a></p>
+        </div>
+        <div id="register-form" style="display:none;">
+          <label>Full name</label>
+          <input type="text" id="register-name" placeholder="Jyotiranjan">
+          <label>College email</label>
+          <input type="email" id="register-email" placeholder="you@giet.edu">
+          <label>Branch</label>
+          <select id="register-branch"><option>CSE</option><option>CSE-AIML</option><option>CSE-DS</option><option>CSE-CyberSecurity</option><option>ECE</option><option>ECE-VLSI</option><option>EEE</option><option>Mechanical</option><option>Civil</option><option>Aircraft & Maintainance</option><option>Biotech</option><option>BCA</option><option>MCA</option><option>BBA</option><option>MBA</option></select>
+          <label>Password</label>
+          <input type="password" id="register-password" placeholder="Create a password">
+          <div id="register-error" class="form-error" style="display:none;"></div>
+          <button class="btn btn-primary submit-full" onclick="registerUser()">Create my record →</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ DASHBOARD ============ -->
+  <section class="view" id="view-dashboard">
+    <h2 class="section-title">Your Record</h2>
+    <p class="section-sub">Everything a recruiter would glance at first — and the gaps worth closing before they do.</p>
+    <div class="dash-grid">
+      <div class="id-card">
+        <div class="strip"></div>
+        <div class="id-head">
+          <div class="avatar" id="dash-avatar">JR</div>
+          <div>
+            <h4 id="dash-name">Jyotiranjan</h4>
+            <span id="dash-email">ROLL NO. 24CSEAIML156</span>
+          </div>
+        </div>
+        <div class="id-stats">
+          <div class="row"><span>Branch</span><span id="dash-branch">CSE(AIML), Final Year</span></div>
+          <div class="row"><span>CGPA</span><span>8.42</span></div>
+          <div class="row"><span>10th / 12th</span><span>92% / 88%</span></div>
+          <div class="row"><span>Backlogs</span><span>0</span></div>
+          <div class="row"><span>Internships</span><span>1</span></div>
+          <div class="row"><span>Projects</span><span>3</span></div>
+          <div class="row"><span>Attendance</span><span>91%</span></div>
+        </div>
+      </div>
+
+      <div class="widget-grid">
+        <div class="widget">
+          <div class="wlabel">Predicted Outcome</div>
+          <div class="wval"><span class="status-pill placed">Placed</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:82%"></div></div>
+          <div class="wlabel" style="margin-top:6px; font-size:10px;">82% model confidence</div>
+        </div>
+        <div class="widget">
+          <div class="wlabel">Overall Skill Score</div>
+          <div class="wval">7.4 / 10</div>
+          <div class="bar-track"><div class="bar-fill" style="width:74%; background:var(--gold);"></div></div>
+        </div>
+        <div class="widget full">
+          <div class="wlabel">Weak Areas Flagged</div>
+          <span class="tag-chip">Aptitude — 6/10</span>
+          <span class="tag-chip">Communication — 6/10</span>
+          <span class="tag-chip">Coding Contests — 2 entries</span>
+        </div>
+        <div class="widget full">
+          <div class="wlabel">Improvement Tips</div>
+          <ul class="tip-list">
+            <li>Clear one aptitude mock test weekly — your section score trails your CGPA by a wide margin.</li>
+            <li>Register for the next campus hackathon; you have zero entries logged this year.</li>
+            <li>Book a mock interview slot with the career cell before your next drive.</li>
+          </ul>
+        </div>
+        <div class="widget full">
+          <div class="wlabel">Recent Predictions</div>
+          <div class="ticket-row" style="border-top:none;"><span>18 Jun 2026</span><span>Placed · 78% conf.</span></div>
+          <div class="ticket-row"><span>02 May 2026</span><span>Placed · 71% conf.</span></div>
+          <div class="ticket-row" style="border-bottom:none;"><span>14 Mar 2026</span><span>Not Placed · 55% conf.</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PREDICT ============ -->
+  <section class="view" id="view-predict">
+    <h2 class="section-title">Placement Evaluation Form</h2>
+    <p class="section-sub">Fill this out the way you'd fill an exam form — accurately. Every field feeds the model directly.</p>
+
+    <div class="card" style="max-width:900px;">
+      <div class="omr-section">
+        <h4>Part I — Academics</h4>
+        <div class="field-grid">
+          <div><label>Age</label><input type="number" id="in-age" value="21"></div>
+          <div><label>Gender</label>
+            <select id="in-gender">
+              <option>Female</option><option>Male</option>
+            </select>
+          </div>
+          <div><label>Degree</label>
+            <select id="in-degree">
+              <option>B.Tech</option><option>BBA</option><option>BCA</option><option>MBA</option><option>MCA</option>
+            </select>
+          </div>
+          <div><label>Branch</label>
+            <select id="in-branch">
+              <option>CSE</option><option>CSE-AIML</option><option>CSE-CyberSecurity</option>
+              <option>CSE-DS</option><option>ECE</option><option>ECE-VLSI</option><option>EEE</option>
+              <option>Civil</option><option>Mechanical</option><option>Agriculture</option>
+              <option>Aircraft and Maintenance</option><option>BBA</option><option>BCA</option>
+              <option>MBA</option><option>MCA</option>
+            </select>
+          </div>
+          <div><label>CGPA</label><input type="number" step="0.01" id="in-cgpa" value="8.4"></div>
+          <div><label>10th Percentage</label><input type="number" id="in-10th" value="92"></div>
+          <div><label>12th Percentage</label><input type="number" id="in-12th" value="88"></div>
+          <div><label>Backlogs</label><input type="number" id="in-backlogs" value="0"></div>
+          <div><label>Attendance %</label><input type="number" id="in-attendance" value="91"></div>
+        </div>
+      </div>
+
+      <div class="omr-section">
+        <h4>Part II — Skills &amp; Aptitude <span style="font-weight:400; font-size:11px; opacity:.7;">(all rated 1–10)</span></h4>
+        <div class="field-grid">
+          <div class="slider-field"><div class="row-between"><label style="margin:0;">Programming Skill</label><output id="out-prog">7</output></div><input type="range" id="in-prog" min="1" max="10" value="7" oninput="document.getElementById('out-prog').textContent=this.value"></div>
+          <div class="slider-field"><div class="row-between"><label style="margin:0;">Aptitude Score</label><output id="out-apt">6</output></div><input type="range" id="in-apt" min="1" max="10" value="6" oninput="document.getElementById('out-apt').textContent=this.value"></div>
+          <div class="slider-field"><div class="row-between"><label style="margin:0;">Communication</label><output id="out-comm">6</output></div><input type="range" id="in-comm" min="1" max="10" value="6" oninput="document.getElementById('out-comm').textContent=this.value"></div>
+          <div class="slider-field"><div class="row-between"><label style="margin:0;">Technical Interview Score</label><output id="out-tech">7</output></div><input type="range" id="in-tech" min="1" max="10" value="7" oninput="document.getElementById('out-tech').textContent=this.value"></div>
+          <div class="slider-field"><div class="row-between"><label style="margin:0;">Mock Interview Score</label><output id="out-mock">7</output></div><input type="range" id="in-mock" min="1" max="10" value="7" oninput="document.getElementById('out-mock').textContent=this.value"></div>
+          <div class="slider-field"><div class="row-between"><label style="margin:0;">Problem Solving</label><output id="out-prob">7</output></div><input type="range" id="in-prob" min="1" max="10" value="7" oninput="document.getElementById('out-prob').textContent=this.value"></div>
+          <div class="slider-field"><div class="row-between"><label style="margin:0;">English Fluency</label><output id="out-eng">7</output></div><input type="range" id="in-eng" min="1" max="10" value="7" oninput="document.getElementById('out-eng').textContent=this.value"></div>
+        </div>
+      </div>
+
+      <div class="omr-section" style="margin-bottom:6px;">
+        <h4>Part III — Experience</h4>
+        <div class="field-grid">
+          <div><label>Projects</label><input type="number" id="in-proj" value="3"></div>
+          <div><label>Internships</label><input type="number" id="in-intern" value="1"></div>
+          <div><label>Certifications</label><input type="number" id="in-cert" value="2"></div>
+          <div><label>Hackathons Attended</label><input type="number" id="in-hack" value="0"></div>
+        </div>
+      </div>
+
+      <div id="predict-error" style="display:none; color:#a11; margin-top:10px; font-size:13px;"></div>
+      <button class="btn btn-primary" id="predict-submit-btn" style="margin-top:10px;" onclick="runPrediction()">Submit for evaluation →</button>
+    </div>
+  </section>
+
+  <!-- ============ RESULT ============ -->
+  <section class="view" id="view-result">
+    <h2 class="section-title">Evaluation Result</h2>
+    <p class="section-sub">Generated instantly from the form you just submitted — saved automatically to your history.</p>
+
+    <div class="result-sheet" style="max-width:900px;">
+      <div id="stamp-el" class="stamp">Likely Placed</div>
+      <div class="result-head">
+        <div>
+          <h3 id="result-name">Candidate</h3>
+          <span id="result-timestamp">—</span>
+        </div>
+      </div>
+      <div class="result-main">
+        <div class="gauge-wrap">
+          <div class="gauge-num verdict placed" id="gauge-verdict">Placed</div>
+          <div class="gauge-lbl">Predicted Outcome</div>
+          <div class="gauge-confidence" id="gauge-confidence">— confidence</div>
+        </div>
+        <div class="breakdown">
+          <div class="row"><div class="name">Academics</div><div class="track"><div class="fill" id="bar-academics" style="width:0%"></div></div></div>
+          <div class="row"><div class="name">Programming</div><div class="track"><div class="fill" id="bar-programming" style="width:0%"></div></div></div>
+          <div class="row"><div class="name">Aptitude</div><div class="track"><div class="fill" id="bar-aptitude" style="width:0%"></div></div></div>
+          <div class="row"><div class="name">Communication</div><div class="track"><div class="fill" id="bar-communication" style="width:0%"></div></div></div>
+          <div class="row"><div class="name">Experience</div><div class="track"><div class="fill" id="bar-experience" style="width:0%"></div></div></div>
+        </div>
+      </div>
+      <div class="remarks">
+        <h4>Remarks &amp; Suggestions</h4>
+        <ul id="remarks-list">
+          <li>Submit the form to see personalized remarks here.</li>
+        </ul>
+      </div>
+      <button class="btn btn-ghost" style="margin-top:24px;" onclick="showView('history')">View in history →</button>
+    </div>
+  </section>
+
+  <!-- ============ HISTORY ============ -->
+  <section class="view" id="view-history">
+    <h2 class="section-title">Prediction Ledger</h2>
+    <p class="section-sub">Every evaluation you've run, in order — so you can see the trend, not just the last score.</p>
+    <div class="card" style="padding:8px 22px;">
+      <table class="ledger">
+        <thead><tr><th>Date</th><th>Confidence</th><th>Predicted Class</th><th>CGPA</th><th>Top suggestion</th></tr></thead>
+        <tbody id="history-body">
+          <tr><td>10 Jul 2026</td><td>82%</td><td><span class="status-pill placed">Placed</span></td><td>8.42</td><td>Raise aptitude score</td></tr>
+          <tr><td>18 Jun 2026</td><td>78%</td><td><span class="status-pill placed">Placed</span></td><td>8.40</td><td>Add a coding contest</td></tr>
+          <tr><td>02 May 2026</td><td>71%</td><td><span class="status-pill placed">Placed</span></td><td>8.35</td><td>Complete an internship</td></tr>
+          <tr><td>14 Mar 2026</td><td>55%</td><td><span class="status-pill notplaced">Not Placed</span></td><td>8.20</td><td>Improve communication</td></tr>
+          <tr><td>02 Feb 2026</td><td>39%</td><td><span class="status-pill notplaced">Not Placed</span></td><td>8.10</td><td>Reduce backlogs</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ ADMIN LOGIN ============ -->
+  <section class="view" id="view-admin-login">
+    <h2 class="section-title">Admin Login</h2>
+    <p class="section-sub">Placement-cell access for branch reports, prediction records and student readiness data.</p>
+    <div class="auth-shell">
+      <div class="card">
+        <label>Admin ID</label>
+        <input type="email" placeholder="admin@college.edu">
+        <label>Password</label>
+        <input type="password" placeholder="Enter admin password">
+        <button class="btn btn-primary submit-full" onclick="showView('admin')">Enter admin dashboard →</button>
+        <p class="form-note">Restricted access for Career Services Office staff.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ADMIN ============ -->
+  <section class="view" id="view-admin">
+    <h2 class="section-title">Admin's Dashboard</h2>
+    <p class="section-sub">Placement-cell view across every branch and every student on file.</p>
+
+    <div class="stat-row">
+      <div class="stat-card"><div class="n">1,284</div><div class="l">Total Students</div></div>
+      <div class="stat-card"><div class="n">3,910</div><div class="l">Total Predictions</div></div>
+      <div class="stat-card"><div class="n">71%</div><div class="l">Placement Rate</div></div>
+      <div class="stat-card"><div class="n">7.86</div><div class="l">Average CGPA</div></div>
+    </div>
+
+    <div class="chart-row">
+      <div class="chart-card">
+        <h4>Branch-wise Placement Rate</h4>
+        <canvas id="branchChart" height="260"></canvas>
+      </div>
+      <div class="chart-card">
+        <h4>CGPA Distribution</h4>
+        <canvas id="cgpaChart" height="200"></canvas>
+      </div>
+    </div>
+
+    <div class="card" style="padding:8px 22px;">
+      <table class="ledger">
+        <thead><tr><th>Student</th><th>Branch</th><th>CGPA</th><th>Confidence</th><th>Predicted Class</th></tr></thead>
+        <tbody>
+          <tr><td>Omm Abinash Barik</td><td>CSE-AIML</td><td>9.5</td><td>82%</td><td><span class="status-pill placed">Likely Placed</span></td></tr>
+          <tr><td>DibyaJyoti Pradhan</td><td>Mech</td><td>6.95</td><td>48%</td><td><span class="status-pill notplaced">Not Placed</span></td></tr>
+          <tr><td>Jyotiranjan Mohakud</td><td>CSE-AIML</td><td>9.02</td><td>82%</td><td><span class="status-pill placed">Likely Placed</span></td></tr>
+          <tr><td>Shubhankar Mishra</td><td>CSE-AIML</td><td>8.75</td><td>88%</td><td><span class="status-pill placed">Likely Placed</span></td></tr>
+          <tr><td>Dillip Kumar Chaudhury</td><td>Civil</td><td>7.9</td><td>75%</td><td><span class="status-pill placed">Likely Placed</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <div class="wrap">
+    <span>HireVision AI © · Career Services Office</span>
+    <span>Design by Abhi, Jyoti & Shubhankar</span>
+    <span>GIET University, Gunupur, Rayagada</span>
+    <span>Model v1.0</span>
+  </div>
+</footer>
+<script src="app.js"></script>
+</body>
+</html>
